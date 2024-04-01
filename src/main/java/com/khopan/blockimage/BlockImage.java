@@ -1,15 +1,15 @@
 package com.khopan.blockimage;
 
-import java.util.Iterator;
-import java.util.Map.Entry;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.block.Block;
+import com.khopan.blockimage.command.BlockImageCommand;
+import com.mojang.brigadier.CommandDispatcher;
+
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
 
 @Mod(BlockImage.MOD_ID)
 public class BlockImage {
@@ -20,10 +20,16 @@ public class BlockImage {
 
 	public BlockImage() {
 		BlockImage.LOGGER.info("Initializing {}", BlockImage.MOD_NAME);
-		BlockImage.printAllBlocks();
+		//BlockImage.printAllBlocks();
+		MinecraftForge.EVENT_BUS.addListener(this :: onRegisterCommand);
 	}
 
-	private static void printAllBlocks() {
+	private void onRegisterCommand(RegisterCommandsEvent Event) {
+		CommandDispatcher<CommandSourceStack> dispatcher = Event.getDispatcher();
+		BlockImageCommand.register(dispatcher);
+	}
+
+	/*private static void printAllBlocks() {
 		Iterator<Entry<ResourceKey<Block>, Block>> iterator = ForgeRegistries.BLOCKS.getEntries().iterator();
 
 		while(iterator.hasNext()) {
@@ -31,5 +37,5 @@ public class BlockImage {
 			ResourceKey<Block> key = entry.getKey();
 			System.out.println(key.toString());
 		}
-	}
+	}*/
 }
