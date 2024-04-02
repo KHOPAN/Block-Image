@@ -1,6 +1,5 @@
 package com.khopan.blockimage.command.argument;
 
-import com.khopan.blockimage.HandSide;
 import com.mojang.brigadier.context.CommandContext;
 
 import net.minecraft.commands.CommandSourceStack;

@@ -1,4 +1,4 @@
-package com.khopan.blockimage;
+package com.khopan.blockimage.command.argument;
 
 import com.mojang.serialization.Codec;
 
