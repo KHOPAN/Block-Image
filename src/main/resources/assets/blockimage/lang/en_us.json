@@ -1,0 +1,6 @@
+{
+	"error.command.blockimage.missingfile": "Cannot find the path specified",
+	"error.command.blockimage.invalidfile": "Invalid file type",
+	"error.command.blockimage.toosmall": "Invalid image dimension: Image too small",
+	"error.command.blockimage.noblockavailable": "Error: No blocks available"
+}

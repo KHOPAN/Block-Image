@@ -33,14 +33,4 @@ public class BlockImage {
 		CommandDispatcher<CommandSourceStack> dispatcher = Event.getDispatcher();
 		BlockImageCommand.register(dispatcher);
 	}
-
-	/*private static void printAllBlocks() {
-		Iterator<Entry<ResourceKey<Block>, Block>> iterator = ForgeRegistries.BLOCKS.getEntries().iterator();
-
-		while(iterator.hasNext()) {
-			Entry<ResourceKey<Block>, Block> entry = iterator.next();
-			ResourceKey<Block> key = entry.getKey();
-			System.out.println(key.toString());
-		}
-	}*/
 }

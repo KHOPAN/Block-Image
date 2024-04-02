@@ -32,10 +32,9 @@ import net.minecraft.world.entity.Entity;
 public class BlockImageCommand {
 	private BlockImageCommand() {}
 
-	// Temporary (literal)
-	private static final SimpleCommandExceptionType ERROR_FILE_NOT_FOUND = new SimpleCommandExceptionType(Component.literal("Cannot find the path specified"));
-	private static final SimpleCommandExceptionType ERROR_INVALID_FILE = new SimpleCommandExceptionType(Component.literal("Invalid file type"));
-	private static final SimpleCommandExceptionType ERROR_INVALID_DIMENSION = new SimpleCommandExceptionType(Component.literal("Invalid image dimension: Image too small"));
+	private static final SimpleCommandExceptionType ERROR_FILE_NOT_FOUND = new SimpleCommandExceptionType(Component.translatable("error.command.blockimage.missingfile"));
+	private static final SimpleCommandExceptionType ERROR_INVALID_FILE = new SimpleCommandExceptionType(Component.translatable("error.command.blockimage.invalidfile"));
+	private static final SimpleCommandExceptionType ERROR_INVALID_DIMENSION = new SimpleCommandExceptionType(Component.translatable("error.command.blockimage.toosmall"));
 
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		dispatcher.register(Commands.literal("blockimage").requires(source -> source.hasPermission(2) && source.isPlayer())
@@ -116,7 +115,19 @@ public class BlockImageCommand {
 			resultHeight = verticalLimit;
 		}
 
-		Image scaledImage = image.getScaledInstance(resultWidth, resultHeight, BufferedImage.SCALE_SMOOTH);
+		BufferedImage bufferedImage;
+
+		if(imageWidth == resultWidth && imageHeight == resultHeight) {
+			bufferedImage = image;
+		} else {
+			Image scaledImage = image.getScaledInstance(resultWidth, resultHeight, BufferedImage.SCALE_SMOOTH);
+			bufferedImage = new BufferedImage(resultWidth, resultHeight, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D Graphics = bufferedImage.createGraphics();
+			Graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			Graphics.drawImage(scaledImage, 0, 0, null);
+			Graphics.dispose();
+		}
+
 		StringBuilder builder = new StringBuilder();
 		builder.append("Input size: ");
 		builder.append(image.getWidth());
@@ -126,13 +137,8 @@ public class BlockImageCommand {
 		builder.append(resultWidth);
 		builder.append('x');
 		builder.append(resultHeight);
-		source.sendSystemMessage(Component.literal(builder.toString()));
-		BufferedImage bufferedImage = new BufferedImage(resultWidth, resultHeight, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D Graphics = bufferedImage.createGraphics();
-		Graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		Graphics.drawImage(scaledImage, 0, 0, null);
-		Graphics.dispose();
-		ImagePlacer.place(bufferedImage, position.above(resultHeight - 1), level);
+		player.sendSystemMessage(Component.literal(builder.toString()));
+		ImagePlacer.place(bufferedImage, position.above(resultHeight - 1), level, direction, side);
 		return Command.SINGLE_SUCCESS;
 	}
 }

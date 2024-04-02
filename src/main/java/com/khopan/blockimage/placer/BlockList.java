@@ -9,8 +9,6 @@ import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
-import com.khopan.blockimage.placer.score.ColorScore;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -67,17 +65,26 @@ public class BlockList {
 		return list;
 	}
 
-	public static BlockEntry findClosest(List<BlockEntry> list, int color, ColorScore colorScore) {
+	public static BlockEntry findClosest(List<BlockEntry> list, int color) {
 		int alpha = (color >> 24) & 0xFF;
 		int red = (color >> 16) & 0xFF;
 		int green = (color >> 8) & 0xFF;
 		int blue = color & 0xFF;
+
+		if(alpha == 0) {
+			alpha = 255;
+			red = 255;
+			green = 255;
+			blue = 255;
+		}
+
 		double minimumScore = Double.MAX_VALUE;
 		BlockEntry closest = null;
 
 		for(int i = 0; i < list.size(); i++) {
 			BlockEntry entry = list.get(i);
-			double score = colorScore.score(alpha, red, green, blue, entry.alpha, entry.red, entry.green, entry.blue);
+			double factor = ((double) Math.min(alpha, entry.alpha)) / 255.0d;
+			double score = (1.0d - factor) * Math.abs(alpha - entry.alpha) * 3.0d + factor * (Math.abs(red - entry.red) + Math.abs(green - entry.green) + Math.abs(blue - entry.blue));
 
 			if(score < minimumScore) {
 				minimumScore = score;
