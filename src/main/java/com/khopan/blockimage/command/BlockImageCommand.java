@@ -1,6 +1,8 @@
 package com.khopan.blockimage.command;
 
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -8,6 +10,7 @@ import javax.imageio.ImageIO;
 
 import com.khopan.blockimage.command.argument.HandSide;
 import com.khopan.blockimage.command.argument.HandSideArgumentType;
+import com.khopan.blockimage.placer.ImagePlacer;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -115,43 +118,21 @@ public class BlockImageCommand {
 
 		Image scaledImage = image.getScaledInstance(resultWidth, resultHeight, BufferedImage.SCALE_SMOOTH);
 		StringBuilder builder = new StringBuilder();
-		builder.append("Image size: ");
+		builder.append("Input size: ");
 		builder.append(image.getWidth());
 		builder.append('x');
 		builder.append(image.getHeight());
-		builder.append("\nFacing: ");
-		builder.append(direction.toString());
-		builder.append("\nHeight Limit: ");
-		builder.append(verticalLimit);
-		builder.append("\nCalculated size: ");
-		builder.append(scaledImage.getWidth(null));
+		builder.append("\nOutput size: ");
+		builder.append(resultWidth);
 		builder.append('x');
-		builder.append(scaledImage.getHeight(null));
+		builder.append(resultHeight);
 		source.sendSystemMessage(Component.literal(builder.toString()));
-
-		/*try {
-			Minecraft minecraft = Minecraft.getInstance();
-			ResourceManager manager = minecraft.getResourceManager();
-			Optional<Resource> optional = manager.getResource(new ResourceLocation("minecraft", "textures/block/diamond_block.png"));
-
-			if(optional.isPresent()) {
-				Resource resource = optional.get();
-				InputStream stream = resource.open();
-
-				if(stream != null) {
-					BufferedImage imageResource = ImageIO.read(stream);
-					stream.close();
-
-					if(imageResource != null) {
-						ImageIO.write(imageResource, "png", new File("C:\\Users\\puthi\\Downloads\\texture.png"));
-						System.out.println(imageResource.getWidth() + "x" + imageResource.getHeight());
-					}
-				}
-			}
-		} catch(Throwable Errors) {
-			Errors.printStackTrace();
-		}*/
-
+		BufferedImage bufferedImage = new BufferedImage(resultWidth, resultHeight, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D Graphics = bufferedImage.createGraphics();
+		Graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		Graphics.drawImage(scaledImage, 0, 0, null);
+		Graphics.dispose();
+		ImagePlacer.place(bufferedImage, position.above(resultHeight - 1), level);
 		return Command.SINGLE_SUCCESS;
 	}
 }
