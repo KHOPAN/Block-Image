@@ -15,7 +15,7 @@ import net.minecraft.server.level.ServerLevel;
 public class ImagePlacer {
 	private ImagePlacer() {}
 
-	private static final SimpleCommandExceptionType ERROR_NO_BLOCK_AVAILABLE = new SimpleCommandExceptionType(Component.translatable("error.command.blockimage.noblockavailable"));
+	private static final SimpleCommandExceptionType ERROR_NO_BLOCK_AVAILABLE = new SimpleCommandExceptionType(Component.translatable("error.command.blockimage.no_blocks_available"));
 
 	public static void place(BufferedImage image, BlockPos position, ServerLevel level, Direction direction, HandSide side) throws CommandSyntaxException {
 		List<BlockEntry> blockList = BlockList.get();

@@ -8,13 +8,13 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
+import com.khopan.blockimage.command.argument.FileArgumentType;
 import com.khopan.blockimage.command.argument.HandSide;
 import com.khopan.blockimage.command.argument.HandSideArgumentType;
 import com.khopan.blockimage.placer.ImagePlacer;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -32,21 +32,21 @@ import net.minecraft.world.entity.Entity;
 public class BlockImageCommand {
 	private BlockImageCommand() {}
 
-	private static final SimpleCommandExceptionType ERROR_FILE_NOT_FOUND = new SimpleCommandExceptionType(Component.translatable("error.command.blockimage.missingfile"));
-	private static final SimpleCommandExceptionType ERROR_INVALID_FILE = new SimpleCommandExceptionType(Component.translatable("error.command.blockimage.invalidfile"));
-	private static final SimpleCommandExceptionType ERROR_INVALID_DIMENSION = new SimpleCommandExceptionType(Component.translatable("error.command.blockimage.toosmall"));
+	private static final SimpleCommandExceptionType ERROR_INVALID_IMAGE_FILE = new SimpleCommandExceptionType(Component.translatable("error.command.blockimage.invalid_image_file"));
+	private static final SimpleCommandExceptionType ERROR_INVALID_DIMENSION = new SimpleCommandExceptionType(Component.translatable("error.command.blockimage.image_too_small"));
 
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-		dispatcher.register(Commands.literal("blockimage").requires(source -> source.hasPermission(2) && source.isPlayer())
+		dispatcher.register(Commands.literal("blockimage")
+				.requires(source -> source.hasPermission(2) && source.isPlayer())
 				.then(Commands.argument("position", BlockPosArgument.blockPos())
-						.then(Commands.argument("imageFile", StringArgumentType.string())
-								.executes(context -> BlockImageCommand.placeImage(context, HandSide.RIGHT, 0, 0))
+						.then(Commands.argument("imageFile", FileArgumentType.file())
+								.executes(context -> BlockImageCommand.placeImage(context, FileArgumentType.getFile(context, "imageFile"), HandSide.RIGHT, 0, 0))
 								.then(Commands.argument("side", HandSideArgumentType.handSide())
-										.executes(context -> BlockImageCommand.placeImage(context, HandSideArgumentType.getHandSide(context, "side"), 0, 0))
+										.executes(context -> BlockImageCommand.placeImage(context, FileArgumentType.getFile(context, "imageFile"), HandSideArgumentType.getHandSide(context, "side"), 0, 0))
 										.then(Commands.argument("width", IntegerArgumentType.integer(0))
-												.executes(context -> BlockImageCommand.placeImage(context, HandSideArgumentType.getHandSide(context, "side"), IntegerArgumentType.getInteger(context, "width"), 0))
+												.executes(context -> BlockImageCommand.placeImage(context, FileArgumentType.getFile(context, "imageFile"), HandSideArgumentType.getHandSide(context, "side"), IntegerArgumentType.getInteger(context, "width"), 0))
 												.then(Commands.argument("height", IntegerArgumentType.integer(0))
-														.executes(context -> BlockImageCommand.placeImage(context, HandSideArgumentType.getHandSide(context, "side"), IntegerArgumentType.getInteger(context, "width"), IntegerArgumentType.getInteger(context, "height")))
+														.executes(context -> BlockImageCommand.placeImage(context, FileArgumentType.getFile(context, "imageFile"), HandSideArgumentType.getHandSide(context, "side"), IntegerArgumentType.getInteger(context, "width"), IntegerArgumentType.getInteger(context, "height")))
 														)
 												)
 										)
@@ -55,21 +55,14 @@ public class BlockImageCommand {
 				);
 	}
 
-	private static int placeImage(CommandContext<CommandSourceStack> context, HandSide side, int width, int height) throws CommandSyntaxException {
+	private static int placeImage(CommandContext<CommandSourceStack> context, File file, HandSide side, int width, int height) throws CommandSyntaxException {
 		BlockPos position = BlockPosArgument.getLoadedBlockPos(context, "position");
-		String imageFile = StringArgumentType.getString(context, "imageFile");
-		File file = new File(imageFile);
-
-		if(!file.exists()) {
-			throw BlockImageCommand.ERROR_FILE_NOT_FOUND.create();
-		}
-
 		BufferedImage image;
 
 		try {
 			image = ImageIO.read(file);
 		} catch(Throwable Errors) {
-			throw BlockImageCommand.ERROR_INVALID_FILE.create();
+			throw BlockImageCommand.ERROR_INVALID_IMAGE_FILE.create();
 		}
 
 		int imageWidth = image.getWidth();

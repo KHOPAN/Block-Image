@@ -1,6 +1,7 @@
 package com.khopan.blockimage.registry;
 
 import com.khopan.blockimage.BlockImage;
+import com.khopan.blockimage.command.argument.FileArgumentType;
 import com.khopan.blockimage.command.argument.HandSideArgumentType;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
@@ -17,6 +18,7 @@ public class CommandArgumentTypeRegistry {
 	public static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENT_TYPE_REGISTRY = DeferredRegister.create(ForgeRegistries.COMMAND_ARGUMENT_TYPES, BlockImage.MOD_ID);
 
 	public static final RegistryObject<SingletonArgumentInfo<HandSideArgumentType>> HAND_SIDE_ARGUMENT_TYPE = CommandArgumentTypeRegistry.ARGUMENT_TYPE_REGISTRY.register("handside_argument", () -> ArgumentTypeInfos.registerByClass(HandSideArgumentType.class, SingletonArgumentInfo.contextFree(HandSideArgumentType :: handSide)));
+	public static final RegistryObject<SingletonArgumentInfo<FileArgumentType>> FILE_ARGUMENT_TYPE = CommandArgumentTypeRegistry.ARGUMENT_TYPE_REGISTRY.register("file_argument", () -> ArgumentTypeInfos.registerByClass(FileArgumentType.class, SingletonArgumentInfo.contextFree(FileArgumentType :: file)));
 
 	public static void register(IEventBus bus) {
 		CommandArgumentTypeRegistry.ARGUMENT_TYPE_REGISTRY.register(bus);
