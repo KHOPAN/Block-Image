@@ -1,123 +1,53 @@
 plugins {
-	id 'eclipse'
-	id 'idea'
-	id 'maven-publish'
-	id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-	id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+	id "architectury-plugin" version "3.4-SNAPSHOT"
+	id "dev.architectury.loom" version "1.3-SNAPSHOT" apply false
 }
 
-version = mod_version
-group = mod_group_id
-
-base {
-	archivesName = mod_id
+architectury {
+	minecraft = rootProject.minecraft_version
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
+subprojects {
+	apply plugin: "dev.architectury.loom"
 
-minecraft {
-	mappings channel: mapping_channel, version: mapping_version
-	copyIdeResources = true
-	runs {
-		configureEach {
-			workingDirectory project.file('run')
-			property 'forge.logging.markers', 'REGISTRIES'
-			property 'forge.logging.console.level', 'debug'
-			mods {
-				"${mod_id}" {
-					source sourceSets.main
-				}
-			}
-		}
+	loom {
+		silentMojangMappingsLicense()
+	}
 
-		client {
-			property 'forge.enabledGameTestNamespaces', mod_id
-		}
-
-		server {
-			property 'forge.enabledGameTestNamespaces', mod_id
-			args '--nogui'
-		}
-
-		gameTestServer {
-			property 'forge.enabledGameTestNamespaces', mod_id
-		}
-
-		data {
-			workingDirectory project.file('run-data')
-			args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+	dependencies {
+		minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+		mappings loom.layered() {
+			officialMojangMappings()
+			parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${rootProject.parchment_version}@zip")
 		}
 	}
 }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
+allprojects {
+	apply plugin: "java"
+	apply plugin: "architectury-plugin"
+	apply plugin: "maven-publish"
 
-repositories {
-	/*exclusiveContent {
-		forRepository {
-			maven {
-				url "https://cursemaven.com"
-			}
-		}
-
-		filter {
-			includeGroup "curse.maven"
-		}
-	}*/
-}
-
-dependencies {
-	minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-	//runtimeOnly fg.deobf("curse.maven:jei-238222:5101366")   IT JUST DOESN'T WANT TO WORK
-	//runtimeOnly fg.deobf("curse.maven:twigs-496913:4998195") IT JUST DOESN'T WANT TO WORK
-}
-
-tasks.named('processResources', ProcessResources).configure {
-	var replaceProperties = [
-			minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-			forge_version: forge_version, forge_version_range: forge_version_range,
-			loader_version_range: loader_version_range,
-			mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-			mod_authors: mod_authors, mod_description: mod_description,
-	]
-
-	inputs.properties replaceProperties
-	filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-		expand replaceProperties + [project: project]
-	}
-}
-
-tasks.named('jar', Jar).configure {
-	manifest {
-		attributes([
-				'Specification-Title'     : mod_id,
-				'Specification-Vendor'    : mod_authors,
-				'Specification-Version'   : '1',
-				'Implementation-Title'    : project.name,
-				'Implementation-Version'  : project.jar.archiveVersion,
-				'Implementation-Vendor'   : mod_authors,
-				'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-		])
+	base {
+		archivesName = rootProject.archives_base_name
 	}
 
-	finalizedBy 'reobfJar'
-}
-
-publishing {
-	publications {
-		register('mavenJava', MavenPublication) {
-			artifact jar
-		}
-	}
+	version = rootProject.mod_version
+	group = rootProject.maven_group
 
 	repositories {
 		maven {
-			url "file://${project.projectDir}/mcmodsrepo"
+			name = 'ParchmentMC'
+			url = 'https://maven.parchmentmc.org'
 		}
 	}
-}
 
-tasks.withType(JavaCompile).configureEach {
-	options.encoding = 'UTF-8'
+	tasks.withType(JavaCompile) {
+		options.encoding = "UTF-8"
+		options.release = 17
+	}
+
+	java {
+		withSourcesJar()
+	}
 }

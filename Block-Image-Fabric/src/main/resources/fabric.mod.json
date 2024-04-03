@@ -1,0 +1,29 @@
+{
+	"schemaVersion": 1,
+	"id": "blockimage",
+	"version": "1.0.0",
+	"name": "Block Image",
+	"description": "Allows you to make a pixel art from an image",
+	"authors": ["KHOPAN"],
+	"contact": {
+		"sources": "https://github.com/KHOPAN/Block-Image"
+	},
+
+	"license": "MIT",
+	"icon": "assets/blockimage/logo.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.khopan.blockimage.fabric.BlockImageFabric"
+		]
+	},
+
+	"mixins": [
+		"blockimage.mixins.json"
+	],
+
+	"depends": {
+		"fabricloader": ">=0.15.7",
+		"minecraft": "~1.20.1"
+	}
+}

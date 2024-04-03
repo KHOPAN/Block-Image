@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"package": "com.khopan.blockimage.fabric.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": [
+		"ArgumentTypeInfosMixin",
+		"CommandsMixin"
+	],
+
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

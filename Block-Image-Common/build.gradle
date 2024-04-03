@@ -1,0 +1,24 @@
+architectury {
+	common(rootProject.enabled_platforms.split(","))
+}
+
+loom {
+	accessWidenerPath = file("src/main/resources/blockimage.accesswidener")
+}
+
+dependencies {
+
+}
+
+publishing {
+	publications {
+		mavenCommon(MavenPublication) {
+			artifactId = rootProject.archives_base_name
+			from components.java
+		}
+	}
+
+	repositories {
+
+	}
+}

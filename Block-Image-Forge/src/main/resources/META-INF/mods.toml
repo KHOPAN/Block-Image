@@ -1,0 +1,28 @@
+modLoader = "javafml"
+loaderVersion = "[47,)"
+issueTrackerURL = "https://github.com/KHOPAN/Block-Image/issues"
+license = "MIT"
+
+[[mods]]
+modId = "blockimage"
+version = "1.0.0"
+displayName = "Block Image"
+authors = "KHOPAN"
+logoFile = "logo.png"
+description = '''
+Allows you to make a pixel art from an image
+'''
+
+[[dependencies.blockimage]]
+modId = "forge"
+mandatory = true
+versionRange = "[47,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.blockimage]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.1,)"
+ordering = "NONE"
+side = "BOTH"

@@ -1,0 +1,11 @@
+{
+	"error.command.khopancommon.invalid_path": "Invalid path",
+	"error.command.khopancommon.path_not_absolute": "Path must be absolute",
+	"error.command.khopancommon.path_not_found": "Cannot find the path specified",
+	"error.command.khopancommon.path_must_be_file": "Path must be a file",
+	"error.command.khopancommon.expected_string_terminator": "Expected string terminator",
+
+	"error.command.blockimage.invalid_image_file": "The file must be an image file",
+	"error.command.blockimage.image_too_small": "Image too small",
+	"error.command.blockimage.no_blocks_available": "Error: No blocks are available for constructing an image"
+}
