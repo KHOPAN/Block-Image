@@ -10,7 +10,6 @@ import com.khopan.blockimage.command.argument.HandSideArgumentType.HandSide;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class BlockRegion {
@@ -27,10 +26,9 @@ public class BlockRegion {
 	}
 
 	public int placeInLevel(ServerLevel level, BlockPos origin, Direction direction, HandSide side) {
-		List<BlockPos> positionList = new ArrayList<>();
-		List<Block> blockList = new ArrayList<>();
 		int stepX = direction.getStepX();
 		int stepZ = direction.getStepZ();
+		int count = 0;
 
 		for(int y = 0; y < this.height; y++) {
 			for(int x = 0; x < this.width; x++) {
@@ -43,21 +41,12 @@ public class BlockRegion {
 				BlockPos position = origin.offset(x * stepX, -y, x * stepZ);
 
 				if(level.setBlock(position, state, 2)) {
-					positionList.add(position);
-					blockList.add(state.getBlock());
+					count++;
 				}
 			}
 		}
 
-		int locationLength = positionList.size();
-
-		for(int i = 0; i < locationLength; i++) {
-			BlockPos position = positionList.get(i);
-			Block block = blockList.get(i);
-			level.blockUpdated(position, block);
-		}
-
-		return locationLength;
+		return count;
 	}
 
 	public void start(BufferedImage image, HandSide side, List<BlockEntry> blockList) {
@@ -98,11 +87,15 @@ public class BlockRegion {
 
 	private void worker(BufferedImage image, HandSide side, List<BlockEntry> blockList, int start, int end) {
 		for(int i = start; i <= end; i++) {
-			int x = i % this.height;
-			int y = i / this.height;
-			int pixel = image.getRGB(HandSide.LEFT.equals(side) ? this.width - x - 1 : x, y);
-			BlockEntry entry = BlockList.findClosest(blockList, pixel);
-			this.blockList[i] = entry.block.defaultBlockState();
+			try {
+				int x = i % this.width;
+				int y = i / this.width;
+				int pixel = image.getRGB(HandSide.LEFT.equals(side) ? this.width - x - 1 : x, y);
+				BlockEntry entry = BlockList.findClosest(blockList, pixel);
+				this.blockList[i] = entry.block.defaultBlockState();
+			} catch(Throwable Errors) {
+				Errors.printStackTrace();;
+			}
 		}
 	}
 }
