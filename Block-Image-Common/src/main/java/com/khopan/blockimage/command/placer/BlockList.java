@@ -80,17 +80,12 @@ public class BlockList {
 			thread.setName("Block Image Query Thread #" + threadNumber);
 			thread.setPriority(6);
 			threadList.add(thread);
-		}
-
-		int threadListSize = threadList.size();
-
-		for(int i = 0; i < threadListSize; i++) {
-			threadList.get(i).start();
+			thread.start();
 		}
 
 		BlockImage.LOGGER.info("Started {} worker thread{}", threadNumber, threadNumber == 1 ? "" : "s");
 
-		for(int i = 0; i < threadListSize; i++) {
+		for(int i = 0; i < threadList.size(); i++) {
 			try {
 				threadList.get(i).join();
 			} catch(Throwable Errors) {

@@ -133,7 +133,7 @@ public class BlockImageCommand {
 		builder.append('x');
 		builder.append(resultHeight);
 		player.sendSystemMessage(Component.literal(builder.toString()));
-		ImagePlacer.place(bufferedImage, position.above(resultHeight - 1), level, direction, side);
+		ImagePlacer.place(bufferedImage, player, level, position.above(resultHeight - 1), direction, side);
 		return Command.SINGLE_SUCCESS;
 	}
 }

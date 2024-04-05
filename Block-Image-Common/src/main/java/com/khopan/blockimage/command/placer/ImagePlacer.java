@@ -12,13 +12,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 
 public class ImagePlacer {
 	private ImagePlacer() {}
 
 	private static final SimpleCommandExceptionType ERROR_NO_BLOCK_AVAILABLE = new SimpleCommandExceptionType(Component.translatable("error.command.blockimage.no_blocks_available"));
 
-	public static void place(BufferedImage image, BlockPos position, ServerLevel level, Direction direction, HandSide side) throws CommandSyntaxException {
+	public static void place(BufferedImage image, ServerPlayer player, ServerLevel level, BlockPos position, Direction direction, HandSide side) throws CommandSyntaxException {
 		List<BlockEntry> blockList = BlockList.get();
 
 		if(blockList.isEmpty()) {
@@ -28,18 +29,10 @@ public class ImagePlacer {
 		long time = System.currentTimeMillis();
 		int width = image.getWidth();
 		int height = image.getHeight();
-		int stepX = direction.getStepX();
-		int stepZ = direction.getStepZ();
-
-		for(int y = 0; y < height; y++) {
-			for(int x = 0; x < width; x++) {
-				int pixel = image.getRGB(HandSide.LEFT.equals(side) ? width - x - 1 : x, y);
-				BlockEntry entry = BlockList.findClosest(blockList, pixel);
-				BlockPos location = position.offset(x * stepX, -y, x * stepZ);
-				level.setBlockAndUpdate(location, entry.block.defaultBlockState());
-			}
-		}
-
+		BlockRegion region = new BlockRegion(width, height);
+		region.start(image, side, blockList);
+		int blocks = region.placeInLevel(level, position, direction, side);
+		player.sendSystemMessage(blocks == 1 ? Component.translatable("success.command.blockimage.filled.one") : Component.translatable("success.command.blockimage.filled.multiple", Integer.toString(blocks)));
 		time = System.currentTimeMillis() - time;
 		BlockImage.LOGGER.info("Block placing took {}ms", time);
 	}
