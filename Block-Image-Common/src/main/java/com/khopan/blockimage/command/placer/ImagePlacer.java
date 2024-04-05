@@ -3,6 +3,7 @@ package com.khopan.blockimage.command.placer;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
+import com.khopan.blockimage.BlockImage;
 import com.khopan.blockimage.command.argument.HandSideArgumentType.HandSide;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -24,6 +25,7 @@ public class ImagePlacer {
 			throw ImagePlacer.ERROR_NO_BLOCK_AVAILABLE.create();
 		}
 
+		long time = System.currentTimeMillis();
 		int width = image.getWidth();
 		int height = image.getHeight();
 		int stepX = direction.getStepX();
@@ -37,5 +39,8 @@ public class ImagePlacer {
 				level.setBlockAndUpdate(location, entry.block.defaultBlockState());
 			}
 		}
+
+		time = System.currentTimeMillis() - time;
+		BlockImage.LOGGER.info("Block placing took {}ms", time);
 	}
 }

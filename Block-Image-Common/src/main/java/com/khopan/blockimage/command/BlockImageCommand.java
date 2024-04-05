@@ -8,6 +8,7 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
+import com.khopan.blockimage.BlockImage;
 import com.khopan.blockimage.command.argument.HandSideArgumentType;
 import com.khopan.blockimage.command.argument.HandSideArgumentType.HandSide;
 import com.khopan.blockimage.command.placer.ImagePlacer;
@@ -60,6 +61,7 @@ public class BlockImageCommand {
 		BufferedImage image;
 
 		try {
+			BlockImage.LOGGER.info("Reading image file: {}", file.getAbsolutePath());
 			image = ImageIO.read(file);
 		} catch(Throwable Errors) {
 			throw BlockImageCommand.ERROR_INVALID_IMAGE_FILE.create();
