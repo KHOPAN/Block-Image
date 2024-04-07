@@ -18,7 +18,7 @@ import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
 public class FileArgumentType implements ArgumentType<File> {
@@ -71,6 +71,10 @@ public class FileArgumentType implements ArgumentType<File> {
 		}
 
 		File file = path.toFile();
+
+		if(!FileArgumentType.onClient()) {
+			return file;
+		}
 
 		if(!file.isAbsolute()) {
 			throw FileArgumentType.ERROR_PATH_NOT_ABSOLUTE.createWithContext(reader);
@@ -163,7 +167,7 @@ public class FileArgumentType implements ArgumentType<File> {
 		return new FileArgumentType();
 	}
 
-	public static File getFile(CommandContext<CommandSourceStack> context, String name) {
+	public static File getFile(CommandContext<?> context, String name) {
 		if(context == null) {
 			throw new NullPointerException("Context cannot be null");
 		}
@@ -173,5 +177,13 @@ public class FileArgumentType implements ArgumentType<File> {
 		}
 
 		return context.getArgument(name, File.class);
+	}
+
+	private static boolean onClient() {
+		try {
+			return Minecraft.getInstance().isSameThread();
+		} catch(Throwable Errors) {
+			return false;
+		}
 	}
 }

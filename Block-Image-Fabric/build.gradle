@@ -21,9 +21,10 @@ configurations {
 
 dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-	modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+	modApi "net.fabricmc.fabric-api:fabric-networking-api-v1:${rootProject.fabric_networking_api_version}"
 	common(project(path: ":Block-Image-Common", configuration: "namedElements")) { transitive false }
 	shadowCommon(project(path: ":Block-Image-Common", configuration: "transformProductionFabric")) { transitive false }
+	include "net.fabricmc.fabric-api:fabric-networking-api-v1:${rootProject.fabric_networking_api_version}"
 }
 
 processResources {

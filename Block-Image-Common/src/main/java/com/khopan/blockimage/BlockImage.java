@@ -3,6 +3,10 @@ package com.khopan.blockimage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.khopan.blockimage.packet.client.ImagePacket;
+import com.khopan.blockimage.packet.server.RequestImagePacket;
+import com.khopan.minecraft.common.networking.PacketRegistry;
+
 import net.minecraft.resources.ResourceLocation;
 
 public class BlockImage {
@@ -15,6 +19,8 @@ public class BlockImage {
 
 	public static void initialize() {
 		BlockImage.LOGGER.info("Initializing {}", BlockImage.MOD_NAME);
+		PacketRegistry.register(RequestImagePacket.class);
+		PacketRegistry.register(ImagePacket.class);
 	}
 
 	public static ResourceLocation location(String path) {

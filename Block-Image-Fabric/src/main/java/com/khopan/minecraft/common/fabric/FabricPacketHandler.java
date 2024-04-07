@@ -16,6 +16,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.thread.BlockableEventLoop;
 
 public class FabricPacketHandler implements MultiplatformPacketHandler {
 	private static boolean Initialized = false;
@@ -75,9 +76,9 @@ public class FabricPacketHandler implements MultiplatformPacketHandler {
 				ResourceLocation identifier = packet.getPacketIdentifier();
 
 				if(entry.isClient) {
-					ServerPlayNetworking.registerGlobalReceiver(identifier, (server, player, listener, buffer, sender) -> server.execute(() -> FabricPacketHandler.receive(buffer, PacketDirection.CLIENT_TO_SERVER, player, entry.packetClass)));
+					ServerPlayNetworking.registerGlobalReceiver(identifier, (server, player, listener, buffer, sender) -> FabricPacketHandler.receive(buffer, server, PacketDirection.CLIENT_TO_SERVER, player, entry.packetClass));
 				} else {
-					ClientPlayNetworking.registerGlobalReceiver(identifier, (minecraft, listener, buffer, sender) -> minecraft.execute(() -> FabricPacketHandler.receive(buffer, PacketDirection.SERVER_TO_CLIENT, null, entry.packetClass)));
+					ClientPlayNetworking.registerGlobalReceiver(identifier, (minecraft, listener, buffer, sender) -> FabricPacketHandler.receive(buffer, minecraft, PacketDirection.SERVER_TO_CLIENT, null, entry.packetClass));
 				}
 			}
 		} catch(Throwable Errors) {
@@ -85,10 +86,10 @@ public class FabricPacketHandler implements MultiplatformPacketHandler {
 		}
 	}
 
-	private static void receive(FriendlyByteBuf buffer, PacketDirection direction, ServerPlayer player, Class<? extends Packet> packetClass) {
+	private static void receive(FriendlyByteBuf buffer, BlockableEventLoop<?> loop, PacketDirection direction, ServerPlayer player, Class<? extends Packet> packetClass) {
 		Packet packet = FabricPacketHandler.constructPacket(packetClass);
 		packet.decode(buffer);
-		packet.handle(direction, player);
+		loop.execute(() -> packet.handle(direction, player));
 	}
 
 	private static <T extends Packet> T constructPacket(Class<T> packetClass) {

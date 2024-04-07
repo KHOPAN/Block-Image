@@ -5,9 +5,8 @@ import java.util.List;
 
 import com.khopan.blockimage.BlockImage;
 import com.khopan.blockimage.command.argument.HandSideArgumentType.HandSide;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -17,13 +16,12 @@ import net.minecraft.server.level.ServerPlayer;
 public class ImagePlacer {
 	private ImagePlacer() {}
 
-	private static final SimpleCommandExceptionType ERROR_NO_BLOCK_AVAILABLE = new SimpleCommandExceptionType(Component.translatable("error.command.blockimage.no_blocks_available"));
-
-	public static void place(BufferedImage image, ServerPlayer player, ServerLevel level, BlockPos position, Direction direction, HandSide side) throws CommandSyntaxException {
+	public static void place(BufferedImage image, ServerPlayer player, ServerLevel level, BlockPos position, Direction direction, HandSide side) {
 		List<BlockEntry> blockList = BlockList.get();
 
 		if(blockList.isEmpty()) {
-			throw ImagePlacer.ERROR_NO_BLOCK_AVAILABLE.create();
+			player.sendSystemMessage(Component.empty().append(Component.translatable("error.command.blockimage.no_blocks_available")).withStyle(ChatFormatting.RED));
+			return;
 		}
 
 		long time = System.currentTimeMillis();

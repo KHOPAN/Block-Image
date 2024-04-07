@@ -4,7 +4,6 @@ import com.khopan.blockimage.command.argument.HandSideArgumentType.HandSide;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.serialization.Codec;
 
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.StringRepresentableArgument;
 import net.minecraft.util.StringRepresentable;
 
@@ -17,7 +16,7 @@ public class HandSideArgumentType extends StringRepresentableArgument<HandSide> 
 		return new HandSideArgumentType();
 	}
 
-	public static HandSide getHandSide(CommandContext<CommandSourceStack> context, String name) {
+	public static HandSide getHandSide(CommandContext<?> context, String name) {
 		return context.getArgument(name, HandSide.class);
 	}
 

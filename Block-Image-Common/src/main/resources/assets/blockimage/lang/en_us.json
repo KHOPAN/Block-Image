@@ -7,8 +7,11 @@
 
 	"error.command.blockimage.invalid_image_file": "The file must be an image file",
 	"error.command.blockimage.image_too_small": "Image too small",
+	"error.command.blockimage.serialize_image": "Error while serializing the image",
+	"error.command.blockimage.deserialize_image": "Error while deserializing the image",
 	"error.command.blockimage.no_blocks_available": "Error: No blocks are available for constructing an image",
 
+	"success.command.blockimage.blockimage_info": "Input size: %s\nOutput size: %s",
 	"success.command.blockimage.filled.one": "Successfully filled 1 block",
 	"success.command.blockimage.filled.multiple": "Successfully filled %s blocks"
 }
