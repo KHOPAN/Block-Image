@@ -4,6 +4,7 @@ import com.khopan.blockimage.BlockImage;
 import com.khopan.blockimage.command.BlockImageCommand;
 import com.khopan.blockimage.command.argument.HandSideArgumentType;
 import com.khopan.minecraft.common.command.argument.FileArgumentType;
+import com.khopan.minecraft.common.forge.KHOPANCommonForge;
 import com.mojang.brigadier.CommandDispatcher;
 
 import net.minecraft.commands.CommandSourceStack;
@@ -14,6 +15,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -31,7 +33,12 @@ public class BlockImageForge {
 		FMLJavaModLoadingContext context = FMLJavaModLoadingContext.get();
 		IEventBus bus = context.getModEventBus();
 		BlockImageForge.ARGUMENT_TYPE_REGISTRY.register(bus);
+		bus.addListener(this :: onCommonSetup);
 		MinecraftForge.EVENT_BUS.addListener(this :: onRegisterCommand);
+	}
+
+	private void onCommonSetup(FMLCommonSetupEvent Event) {
+		KHOPANCommonForge.commonSetup();
 	}
 
 	private void onRegisterCommand(RegisterCommandsEvent Event) {

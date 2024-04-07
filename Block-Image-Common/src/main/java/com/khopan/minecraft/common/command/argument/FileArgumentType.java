@@ -32,6 +32,10 @@ public class FileArgumentType implements ArgumentType<File> {
 
 	@Override
 	public File parse(StringReader reader) throws CommandSyntaxException {
+		if(reader == null) {
+			throw new NullPointerException("Reader cannot be null");
+		}
+
 		int start = reader.getCursor();
 		char firstCharacter = reader.peek();
 		boolean escape = false;
@@ -85,6 +89,10 @@ public class FileArgumentType implements ArgumentType<File> {
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+		if(builder == null) {
+			throw new NullPointerException("Builder cannot be null");
+		}
+
 		try {
 			List<Suggestion> list = new ArrayList<>();
 			String input = builder.getInput();
@@ -156,6 +164,14 @@ public class FileArgumentType implements ArgumentType<File> {
 	}
 
 	public static File getFile(CommandContext<CommandSourceStack> context, String name) {
+		if(context == null) {
+			throw new NullPointerException("Context cannot be null");
+		}
+
+		if(name == null) {
+			throw new NullPointerException("Name cannot be null");
+		}
+
 		return context.getArgument(name, File.class);
 	}
 }
